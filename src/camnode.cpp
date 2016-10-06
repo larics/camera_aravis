@@ -78,6 +78,7 @@ struct global_s
 	Config 									config;
 	Config 									configMin;
 	Config 									configMax;
+	std::string 							resolvedFrameid;
 	int                                     idSoftwareTriggerTimer;
 	
 	int										isImplementedAcquisitionFrameRate;
@@ -240,7 +241,7 @@ void RosReconfigure_callback(Config &config, uint32_t level)
     config.ExposureTimeAbs   	= CLIP(config.ExposureTimeAbs,  	global.configMin.ExposureTimeAbs,  		global.configMax.ExposureTimeAbs);
     config.Gain          		= CLIP(config.Gain,         		global.configMin.Gain,         			global.configMax.Gain);
     config.FocusPos       		= CLIP(config.FocusPos,      		global.configMin.FocusPos,      		global.configMax.FocusPos);
-    config.frame_id   			= tf::resolve(tf_prefix, config.frame_id);
+    global.resolvedFrameid		= tf::resolve(tf_prefix, config.frame_id);
 
 
     // Adjust other controls dependent on what the user changed.
@@ -568,7 +569,7 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
 			// Construct the image message.
 			msg.header.stamp.fromNSec(tn);
 			msg.header.seq = arv_buffer_get_frame_id (pBuffer);
-			msg.header.frame_id = global.config.frame_id;
+			msg.header.frame_id = global.resolvedFrameid;
 			msg.width = arv_buffer_get_image_width(pBuffer); //global.widthRoi;
 			msg.height = arv_buffer_get_image_height(pBuffer); //global.heightRoi;
 			msg.encoding = global.pszPixelformat; // should really check if format has changed since last call
