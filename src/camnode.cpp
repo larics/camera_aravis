@@ -913,7 +913,7 @@ int main(int argc, char** argv)
     global.idSoftwareTriggerTimer = 0;
 
     ros::init(argc, argv, "camera");
-    global.phNode = new ros::NodeHandle();
+    global.phNode = new ros::NodeHandle(std::string("~"));
 
 
     //g_type_init ();
